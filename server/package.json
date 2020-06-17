@@ -1,0 +1,50 @@
+{
+  "name": "todo",
+  "version": "0.0.1",
+  "description": "To Do application backend using Apollo Server and Express.",
+  "main": "./dist/index.js",
+  "scripts": {
+    "start": "gulp && node ./dist/index.js",
+    "start-debug": "gulp package-debug && node ./dist/index.js",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
+    "test": "mocha test",
+    "clean": "rm -rf node_modules && rm yarn.lock && yarn cache clean",
+    "reinstall": "rm -rf node_modules && rm yarn.lock && yarn cache clean && yarn install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sumobits/todo.git"
+  },
+  "author": "TJ Cook <sumobits@protonmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-datasource": "^0.7.1",
+    "apollo-server-express": "^2.14.5",
+    "core-js": "3",
+    "dotenv": "^8.2.0",
+    "graphql": "^15.1.0",
+    "lodash": "^4.17.15",
+    "moment": "^2.26.0",
+    "regenerator-runtime": "^0.13.5",
+    "sqlite3": "^4.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/preset-env": "^7.10.2",
+    "@babel/register": "^7.10.1",
+    "babel-eslint": "^10.1.0",
+    "babel-preset-env": "^1.7.0",
+    "del": "^5.1.0",
+    "eslint": "6.8.0",
+    "eslint-plugin-import": "2.20.1",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-eslint": "^6.0.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2",
+    "mocha": "^7.2.0"
+  }
+}
