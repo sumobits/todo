@@ -6,7 +6,7 @@ const TABLE_NAME = 'TD_TASKS';
 export const createTaskTableSQL = () => {
 	return `
 		CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (
-			id INTEGER PRIMARY KEY,
+			id INTEGER PRIMARY KEY NOT NULL,
 			name TEXT NOT NULL,
 			description TEXT,
 			started TEXT,

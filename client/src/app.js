@@ -1,0 +1,25 @@
+/**
+ * @format
+ */
+import React from 'react';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from '@apollo/react-hooks';
+import Config from 'react-native-config';
+import AppContainer from './containers/app';
+import { NavigationContainer } from '@react-navigation/native';
+
+const endpoint = (Config.GRAPHQL_ENDPOINT || 'http://192.168.0.8:3000/graphql');
+
+const client = new ApolloClient({ uri: endpoint });
+
+const App = () => {
+  return (
+    <ApolloProvider client={client}>
+        <NavigationContainer>
+          <AppContainer />
+        </NavigationContainer>
+    </ApolloProvider>
+  );
+};
+
+export default App;

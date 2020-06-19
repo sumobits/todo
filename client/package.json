@@ -1,17 +1,39 @@
 {
   "name": "ToDo",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
+  "license": "MIT",
   "scripts": {
-    "android": "react-native run-android",
+    "android": "npx react-native run-android",
+    "android-debug": "npx react-native run-android --variant=debug --verbose",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
+    "cleanup": "rm -rf node_modules & rm -f yarn.lock & yarn cache clean",
+    "reinstall": "rm -rf node_modules & rm -f yarn.lock & yarn cache clean & yarn install"
   },
   "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
+    "@react-native-community/masked-view": "^0.1.10",
+    "@react-navigation/native": "^5.5.1",
+    "@react-navigation/stack": "^5.5.1",
+    "@types/react": "^16.9.38",
+    "apollo-boost": "^0.4.9",
+    "apollo-client": "^2.6.10",
+    "graphql": "^15.0.0",
+    "lodash": "^4.17.15",
+    "moment": "^2.27.0",
+    "prop-types": "^15.7.2",
     "react": "16.11.0",
-    "react-native": "0.62.2"
+    "react-native": "0.62.2",
+    "react-native-config": "^1.0.0",
+    "react-native-date-picker": "^2.7.11",
+    "react-native-gesture-handler": "^1.6.1",
+    "react-native-safe-area-context": "^3.0.3",
+    "react-native-screens": "^2.7.0",
+    "react-native-vector-icons": "^6.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",

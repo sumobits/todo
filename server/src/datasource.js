@@ -3,9 +3,8 @@
  */
 import sqlite3 from 'sqlite3';
 import { DataSource } from 'apollo-datasource';
-import path from 'path';
 import moment from 'moment';
-import { map } from 'lodash/map';
+import map from 'lodash/map';
 import {
 	createTaskTableSQL,
 	createTaskSQL,
@@ -14,10 +13,9 @@ import {
 	findTasksSQL,
 	updateTaskSQL,
 } from './sql';
-import { ownKeys } from 'core-js/fn/reflect';
 
 const convertRowToTask = row => {
-	if (!task) {
+	if (!row) {
 		return;
 	}
 
@@ -34,17 +32,17 @@ const convertRowToTask = row => {
 
 class TaskDataSource extends DataSource {
 	constructor () {
-		const dbFile = (process.env.DATABASE_FILE_LOCATOIN || path.join(__dirname, 'dist', 'dat.db'));
-		this.db = new sqlite3.Database(dbFile, sqlite3.OPEN_READWRITE, (err, obj) => {
+		super();
+		console.info('Attempting to open database');
+
+		this.db = new sqlite3.Database(':memory:', sqlite3.OPEN_READWRITE, (err, obj) => {
 			if (err) {
 				return console.error(`Failed to open database: ${err}`);
 			}
 
 			console.info('Successfully opened database.');
-			console.debug(JSON.stringify(obj));
+			this.db.run(createTaskTableSQL());
 		});
-
-		this.db.run(createTaskTableSQL);
 	}
 
 	close = () => {
@@ -121,13 +119,16 @@ class TaskDataSource extends DataSource {
 		const sql = findTasksSQL();
 
 		try {
-			const rows = await db.all(sql);
+			const rows = await this.db.all(sql);
+			if(rows) {
+
+			}
 			const tasks = map(rows, row => {
 				return convertRowToTask(row);
 			});
 			return tasks;
 		} catch (err) {
-			return console.error(`Error finding tasks: ${error.message}`);
+			return console.error(`Error finding tasks: ${err.message}`);
 		}
 	}
 
