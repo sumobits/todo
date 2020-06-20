@@ -19,6 +19,7 @@ const FormInput = props => {
 	  label,
 	  multi,
 	  numOfLines,
+	  onChangeText,
 	  disabled,
 	} = props;
 
@@ -30,6 +31,7 @@ const FormInput = props => {
 				style={[styles.input, style]}
 				multiline={multi}
 				numberOfLines={numOfLines}
+				onChangeText={onChangeText}
 				disabled
 			/>
 		</View>

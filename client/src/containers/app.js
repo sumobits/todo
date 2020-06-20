@@ -19,11 +19,6 @@ const FIND_TASKS_QUERY = gql`
 `;
 
 const AppContainer = () => {
-	const [
-		tasks,
-		setTasks
-	] = useState([]);
-
 	const {
 		error,
 		data,
@@ -31,7 +26,6 @@ const AppContainer = () => {
 	} = useQuery(FIND_TASKS_QUERY, {
 		onCompleted: (data) => {
 			console.debug(`Fetched tasks: ${JSON.stringify(data)}`);
-			setTasks(data.tasks);
 		},
 		onError: (err) => {
 			console.error(`Error fetching tasks: ${err.message}`);
@@ -47,7 +41,7 @@ const AppContainer = () => {
 
 	if (error) {
 		console.error(`Error encountered fetching tasks: ${error}`);
-	}
+	} 
 
 	return <MainView />;
 };

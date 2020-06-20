@@ -6,6 +6,7 @@ import {
 	Button,
 	Dimensions,
 	FlatList,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -24,31 +25,35 @@ const Stack = createStackNavigator();
 
 const renderTask = task => {
 	return (
-		<View style={lineItem}>
-			<Text style={lineItemName}>{task.name}</Text>
-			<Text style={lineItemDescription}>{task.name}</Text>
+		<View>
+			<Text>{task.name}</Text>
+			<Text>{task.name}</Text>
 		</View>
 	);
 };
 
 const MainComponent = props => {
+	let allTasks = [];
 	const { navigation } = props;
-	const [ tasks, setTasks ] = useState();
+
+	if(props.route.params) {
+		allTasks = props.route.params.allTasks;
+	}
 
 	const onCreateTask = () => {
-		navigation.navigate('Task', {task: {}, editing: true});
+		navigation.navigate('Task', {allTasks, task: {}, editing: true});
 	};
 
 	const onLineItemPress = task => {
-		navigation.navigate('Task', {task});
+		navigation.navigate('Task', {allTasks, task, editing: false});
 	};
 
 	return (
 		<>
 			<View>
 				<FlatList
-					data={tasks}
-					keyExtractor={task => task.id}
+					data={allTasks}
+					keyExtractor={(item, index) => item.id}
 					onPress={onLineItemPress}
 					renderItem={renderTask}
 					style={styles.list} />
@@ -63,36 +68,35 @@ const MainComponent = props => {
 };
 
 const TaskComponent = props => {
-	const { navigator } = props;
-	const { task, editing } = props.route.params;
+	const { navigation } = props;
+	const { allTasks = [], task, editing } = props.route.params;
 	const disabled = editing;
 
 	const onTaskCancel = () => {
-		navigator.navigate('Main')
+		navigation.navigate('Main', {allTasks});
 	};
 
 	const onTaskSave = () => {
-		//todo save task to server
-	};
-
-	const changeStatus = () => {
-		task.inProgress=true;
-		task.started = new Date(); 
+		task.id = Math.random();
+		allTasks.push(task)
+		navigation.navigate('Main', {allTasks});
 	};
 
 	return (
 		<>
-			<View style={styles.taskContainer}> 
+			<ScrollView style={styles.taskContainer}> 
 				<FormInput
 					label='Name'
 					value={task.name}
+					onChangeText={val => {
+						task.name = val
+					}}
 					disabled
 				/>
 				<View style={styles.datePickerContainer}>
 					<Text style={styles.completionLabel}>Due Date</Text>
 					<DatePicker
 						date={new Date()}
-						maximumDate={moment().add(5, 'years').fromNow()}
 						minimumDate={new Date()}
 						mode='date'
 						onDateChange={date => task.targetCompletion = date}
@@ -103,16 +107,29 @@ const TaskComponent = props => {
 					label='Description'
 					multi={true}
 					numberOfLines={4}
+					onChangeText={val => {
+						task.description = val
+					}}
 					value={task.description}
 					disbaled
 				/>
 				<TouchableOpacity style={styles.lifecycleContainer}>
 					<Button
-						onPress={changeStatus}
+						onPress={() => {
+							if(task.inProgress) {
+								task.inProgress = false;
+								task.actualCompletion = new Date();
+							} else {
+								task.inProgress = true;
+								task.started = new Date(); 
+							}
+							
+							
+						}}
 						styles={task.inProgress ? styles.completeButton : styles.startButton}
 						title={task.inProgress ? 'Complete' : 'Start'} />
 				</TouchableOpacity>
-			</View> 
+			</ScrollView> 
 
 			<TouchableOpacity onPress={onTaskCancel} style={styles.taskCancelContainer}>
 				<Text style={styles.cancelButton}>Cancel</Text>
@@ -225,7 +242,7 @@ const styles = StyleSheet.create({
 	},
 	completionLabel: {
 		...Fonts.formLabel,
-	}
+	},
 });
 
 export default MainView;
