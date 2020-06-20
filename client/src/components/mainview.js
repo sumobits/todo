@@ -10,6 +10,7 @@ import {
 	StyleSheet,
 	Text,
 	TouchableOpacity,
+	TouchableWithoutFeedback,
 	View,
 } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -22,19 +23,30 @@ import {
 } from '../utils';
 
 const Stack = createStackNavigator();
+let mainNav; //not the best but for time.
 
-const renderTask = task => {
+const renderTask = props => {
+	const { item } = props;
+
+	const onPress = () => {
+		mainNav.navigate('Task', { allTasks, item, editing: false });
+	};
+
 	return (
-		<View>
-			<Text>{task.name}</Text>
-			<Text>{task.name}</Text>
-		</View>
+		<TouchableWithoutFeedback  onPress={onPress}>
+			<View style={styles.lineItem}>
+				<Text>{item.name}</Text>
+				<Text>{item.description}</Text>
+			</View>
+		</TouchableWithoutFeedback>
 	);
 };
 
 const MainComponent = props => {
 	let allTasks = [];
 	const { navigation } = props;
+
+	mainNav = navigation;// TODO fix me
 
 	if(props.route.params) {
 		allTasks = props.route.params.allTasks;
@@ -44,17 +56,13 @@ const MainComponent = props => {
 		navigation.navigate('Task', {allTasks, task: {}, editing: true});
 	};
 
-	const onLineItemPress = task => {
-		navigation.navigate('Task', {allTasks, task, editing: false});
-	};
-
 	return (
 		<>
 			<View>
 				<FlatList
+					contentContainerStyle={allTasks.length > 0 ? styles.lineItem : null}
 					data={allTasks}
-					keyExtractor={(item, index) => item.id}
-					onPress={onLineItemPress}
+					keyExtractor={(item, index) => item.id.toString()}
 					renderItem={renderTask}
 					style={styles.list} />
 			</View>
@@ -100,6 +108,7 @@ const TaskComponent = props => {
 						minimumDate={new Date()}
 						mode='date'
 						onDateChange={date => task.targetCompletion = date}
+						style={styles.datePicker}
 						value={task.targetCompletion}
 					/>
 				</View>
@@ -243,6 +252,20 @@ const styles = StyleSheet.create({
 	completionLabel: {
 		...Fonts.formLabel,
 	},
+	lineItem: {
+		borderColor: Colors.darkgray,
+		borderStyle: 'solid',
+		borderWidth: StyleSheet.hairlineWidth,
+		borderRadius: 10,
+		marginLeft: 5,
+		marginRight: 5,
+		marginTop: 10,
+	},
+	datePicker: {
+		borderColor: Colors.darkgray,
+		borderStyle: 'solid',
+		borderWidth: StyleSheet.hairlineWidth,
+	}
 });
 
 export default MainView;
