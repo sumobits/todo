@@ -13,9 +13,11 @@ const {
 import dotenv from 'dotenv';
 import TaskDataSource from './datasource';
 
+global.Blob = null;
+
 dotenv.config();
 
-const taskDataSource = new TaskDataSource();
+const dataSource = new TaskDataSource();
 
 const typeDefs = gql`
 	type Task {
@@ -80,7 +82,7 @@ const resolvers = {
 
 const apolloServer = new ApolloServer({
 	dataSources: () => {
-		return { task: taskDataSource };
+		return { task: dataSource };
 	},
 	resolvers,
 	typeDefs,
@@ -96,7 +98,7 @@ app.listen({ port }, () => {
 
 	process.on('SIGINT', () => {
 		console.warn('Caught interrupt signal');
-		taskDataSource.close();
+		dataSource.close();
 		process.exit();
 	});
 });

@@ -3,6 +3,15 @@
  */
 const TABLE_NAME = 'TD_TASKS';
 
+export const verifyTableExistsSQL = () => {
+	return `
+		SELECT 
+			count(*) 
+		FROM sqlite_master 
+		WHERE type='table' AND name='${TABLE_NAME}';
+	`;
+};
+
 export const createTaskTableSQL = () => {
 	return `
 		CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (

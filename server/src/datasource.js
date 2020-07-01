@@ -12,6 +12,7 @@ import {
 	findTaskSQL,
 	findTasksSQL,
 	updateTaskSQL,
+	verifyTableExistsSQL,
 } from './sql';
 
 const convertRowToTask = row => {
@@ -35,13 +36,23 @@ class TaskDataSource extends DataSource {
 		super();
 		console.info('Attempting to open database');
 
-		this.db = new sqlite3.Database(':memory:', sqlite3.OPEN_READWRITE, (err, obj) => {
+		this.db = new sqlite3.Database(':memory:', (err, obj) => {
 			if (err) {
-				return console.error(`Failed to open database: ${err}`);
+				console.error(`Failed to open database: ${err}`);
+				throw err;
 			}
 
 			console.info('Successfully opened database.');
-			this.db.run(createTaskTableSQL());
+			this.db.exec(createTaskTableSQL(), err => {
+				if (err) {
+					console.error(`Failed to create task table: ${err.message}`);
+				}
+			});
+			this.db.exec(verifyTableExistsSQL(), err => {
+				if (err) {
+					console.error(`Failed to verify task table: ${err.message}`);
+				}
+			});
 		});
 	}
 
@@ -70,10 +81,10 @@ class TaskDataSource extends DataSource {
 			created: moment().format(),
 			updated: null,
 		};
-		const sql = createTaskSQL(task);
 
 		try {
-			return await this.db.run(createTaskSQL);
+			await this.db.exec(createTaskSQL(task));
+			return task;
 		} catch (err) {
 			return console.error(`Error creating task: ${err.message}`);		}
 	}
@@ -90,9 +101,11 @@ class TaskDataSource extends DataSource {
 		const sql = deleteTaskSQL(id);
 
 		try {
-			return await this.db.run(sql);
+			await this.db.exec(sql);
+			return true;
 		} catch (err) {
-			return console.error(`Error deleting task [${id}]: ${err.message}`);
+			console.error(`Error deleting task [${id}]: ${err.message}`);
+			return false;
 		}
 	}
 
@@ -104,8 +117,8 @@ class TaskDataSource extends DataSource {
 		const sql = findTaskSQL(id);
 
 		try {
-			const row = await this.db.get(sql);
-			return convertRowToTask(row);
+			const result = await this.db.query(sql);
+			return convertRowToTask(result.rows);
 		} catch (err) {
 			return console.error(`Error finding task[${id}]: ${err.message}`);
 		}
@@ -119,14 +132,13 @@ class TaskDataSource extends DataSource {
 		const sql = findTasksSQL();
 
 		try {
-			const rows = await this.db.all(sql);
-			if(rows) {
-
+			const result = await this.db.exec(sql);
+			if(result.rows) {
+				console.log(`found ${result.rows} task records`);
+				return map(result.rows, row => {
+					return convertRowToTask(row);
+				});
 			}
-			const tasks = map(rows, row => {
-				return convertRowToTask(row);
-			});
-			return tasks;
 		} catch (err) {
 			return console.error(`Error finding tasks: ${err.message}`);
 		}
@@ -146,9 +158,8 @@ class TaskDataSource extends DataSource {
 		const sql = updateTaskSQL(task);
 
 		try {
-			const row = await this.db.run(sql);
-			const task = convertRowToTask(row);
-			return task;
+			const row = await this.db.exec(sql);
+			return convertRowToTask(row);
 		} catch (err) {
 			return console.error(`Error updating task [${task.id}]: ${err.message}`);
 		}
