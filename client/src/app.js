@@ -5,10 +5,10 @@ import React from 'react';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from '@apollo/react-hooks';
 import Config from 'react-native-config';
-import AppContainer from './containers/app';
+import MainContainer from './containers/main';
 import { NavigationContainer } from '@react-navigation/native';
 
-const endpoint = (Config.GRAPHQL_ENDPOINT || 'http://192.168.0.8:3000/graphql');
+const endpoint = (Config.GRAPHQL_ENDPOINT || 'http://127.0.0.1:3000/graphql');
 
 const client = new ApolloClient({ uri: endpoint });
 
@@ -16,7 +16,7 @@ const App = () => {
   return (
     <ApolloProvider client={client}>
         <NavigationContainer>
-          <AppContainer />
+          <MainContainer />
         </NavigationContainer>
     </ApolloProvider>
   );

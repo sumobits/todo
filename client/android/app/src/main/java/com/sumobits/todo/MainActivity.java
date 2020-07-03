@@ -1,4 +1,4 @@
-package com.todo;
+package com.sumobits.todo;
 
 import com.facebook.react.ReactActivity;
 

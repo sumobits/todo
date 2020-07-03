@@ -8,8 +8,7 @@ const Fonts = {
 	},
 	actionButton: {
 		fontFamily: 'Open Sans',
-		fontSize: 38,
-		color: Colors.darkgray,
+		fontSize: 38
 	},
 	appTitle: {
 		fontFamily: 'Open Sans',

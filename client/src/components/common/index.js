@@ -1,4 +1,7 @@
-export CheckBox from './checkbox';
-export FormInput from './forminput';
+/**
+ * @format
+ */
 export SumoButton from './button';
-export LoadingIndicator from './loading';
+export SumoCheckBox from './checkbox';
+export SumoFormInput from './forminput';
+export SumoLoadingIndicator from './loading';

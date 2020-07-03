@@ -1,4 +1,13 @@
 {
   "app.title": "TO DO",
-  "add.new.task": "New Task"
+  "add.new.task": "New Task",
+  "error.title": "Error",
+  "ok.msg": "OK",
+  "main.title": "Tasks",
+  "task.title": "Task",
+  "task.name.label": "Name",
+  "task.description.label": "Notes",
+  "task.due.label": "Planned Completion",
+  "task.complete.action": "Complete",
+  "task.start.action": "Start"
 }

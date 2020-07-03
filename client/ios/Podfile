@@ -77,6 +77,12 @@ target 'ToDo' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
+  pod 'RNDateTimePicker', :path => '../node_modules/@react-native-community/datetimepicker'
+
   target 'ToDoTests' do
     inherit! :complete
     # Pods for testing
