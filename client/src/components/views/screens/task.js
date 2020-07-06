@@ -3,6 +3,7 @@
  */
 import React, { Fragment, useState } from 'react';
 import {
+	Alert,
 	Dimensions,
 	ScrollView,
 	StyleSheet,
@@ -25,8 +26,9 @@ const TaskScreen = props => {
 		editing,
 		error, 
 		navigation,
+		onSave,
 		tasks,
-		task 
+		task,
 	} = props;
 	const [ disabled, setDisabled ] = useState(!editing);
 	
@@ -35,12 +37,6 @@ const TaskScreen = props => {
 	};
 
 	const onCancel = () => {
-		navigation.navigate('main', { tasks });
-	};
-
-	const onSave = () => {
-		task.id = task.id ? task.id : Math.random();
-		tasks.push(task)
 		navigation.navigate('main', { tasks });
 	};
 
@@ -105,11 +101,15 @@ const TaskScreen = props => {
 						<TouchableOpacity onPress={onCancel} style={styles.leftFABContainer}>
 							<Icon color={Colors.white} name="close" size={36} style={styles.fabIcon} />
 						</TouchableOpacity>
-						<TouchableOpacity onPress={onSave} style={styles.rightFABContainer}>
+						<TouchableOpacity onPress={() => onSave(task)} style={styles.rightFABContainer}>
 							<Icon color={Colors.white} name="check" size={36} style={styles.fabIcon} />
 						</TouchableOpacity>
 					</Fragment>	
 				)
+			}
+			{
+				error && Alert.alert(Translations['error.title'], `${error.message}`,
+					[{ text: Translations['ok.msg'], onPress: () => { } }])
 			}
 		</>
 	);

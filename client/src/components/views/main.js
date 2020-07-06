@@ -22,6 +22,7 @@ const MainScreenWrapper = ({ navigation, route }) => {
 						error={context.error} 
 						loading={context.loading} 
 						navigation={navigation}
+						onDelete={context.onDelete}
 						route={route}
 						tasks={context.tasks}
 					 />
@@ -40,9 +41,10 @@ const TaskScreenWrapper = ({ navigation, route }) => {
 						error={context.error}
 						loading={context.loading}
 						navigation={navigation}
+						onSave={context.onSave}
 						route={route}
-						tasks={context.tasks}
 						task={route.params.task}
+						tasks={context.tasks}
 					/>
 				)
 			}}

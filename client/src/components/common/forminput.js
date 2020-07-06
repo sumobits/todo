@@ -61,8 +61,7 @@ const renderDateInput = props => {
 				<TextInput
 					selectionColor={Colors.darkblue}
 					style={styles.dateInput}
-					onChangeText={onChange}
-					disabled={disabled}
+					disabled={true}
 					value={value ? moment(value).format('MMMM Do YYYY') : undefined}
 				/>
 				{
@@ -74,12 +73,15 @@ const renderDateInput = props => {
 						minimumDate={minimumDate || new Date()}
 						mode={'date'}
 						onChange={(e, date) => task.targetCompletion = date}
-						value={value || undefined}
+						value={value || new Date()}
 					/>
 				}
-				<TouchableOpacity onPress={() => setShowPicker(true)}>
-					<Icon color={Colors.primary} name='calendar' size={24} />
-				</TouchableOpacity>
+				{
+					!disabled && !showPicker &&
+					<TouchableOpacity onPress={() => setShowPicker(true)}>
+						<Icon color={Colors.primary} name='calendar' size={24} />
+					</TouchableOpacity>
+				}
 			</View>
 		</View>
 	);

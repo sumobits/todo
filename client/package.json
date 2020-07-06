@@ -5,20 +5,21 @@
   "license": "MIT",
   "scripts": {
     "android": "npx react-native run-android",
-    "android-clean": "cd ./android & ./gradlew --stop & cd .. & rm -rf $HOME/.gradle/caches & rm -rf ./android/.gradle/caches/ & rm -rf ./android/app/build",
+    "android-clean": "cd ./android && ./gradlew --stop && cd .. && rm -rf $HOME/.gradle/caches && rm -rf ./android/.gradle/caches/ && rm -rf ./android/app/build",
     "android-debug": "npx react-native run-android --variant=debug --verbose",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "cleanup": "rm -rf node_modules & rm -f yarn.lock & yarn cache clean",
-    "reinstall": "rm -rf node_modules & rm -f yarn.lock & yarn cache clean & yarn install"
+    "cleanup": "rm -rf node_modules && rm -f yarn.lock && yarn cache clean",
+    "reinstall": "rm -rf node_modules && rm -f yarn.lock && yarn cache clean && yarn install"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
     "@react-native-community/datetimepicker": "^2.5.0",
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-community/toolbar-android": "^0.1.0-rc.2",
     "@react-navigation/native": "^5.5.1",
     "@react-navigation/stack": "^5.6.2",
     "@types/react": "^16.9.38",

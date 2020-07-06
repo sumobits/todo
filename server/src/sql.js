@@ -15,13 +15,13 @@ export const verifyTableExistsSQL = () => {
 export const createTaskTableSQL = () => {
 	return `
 		CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (
-			id INTEGER PRIMARY KEY NOT NULL,
+			id TEXT PRIMARY KEY NOT NULL,
 			name TEXT NOT NULL,
 			description TEXT,
 			started TEXT,
 			target_completion TEXT,
 			actual_completion TEXT,
-			in_progress TEXT 'false' NOT NULL,
+			in_progress INTEGER DEFAULT 0,
 			created TEXT,
 			updated TEXT
 		);
@@ -38,7 +38,7 @@ export const createTaskSQL = task => {
 			target_completion, 
 			actual_completion, 
 			in_progress,
-			create, 
+			created, 
 			updated
 		) VALUES (
 			"${task.id}",
@@ -47,7 +47,7 @@ export const createTaskSQL = task => {
 			"${task.started || null}",
 			"${task.targetCompletion || null}",
 			"${task.actualCompletion || null}",
-			"${task.inProgress}",
+			${task.inProgress || 0},
 			"${task.created || moment().format()}",
 			"${task.updated || null}"
 		);
@@ -56,7 +56,7 @@ export const createTaskSQL = task => {
 
 export const deleteTaskSQL = id => {
 	return `
-		DELETE FROM ${TABLE_NAME} WHERE id=${id};
+		DELETE FROM ${TABLE_NAME} WHERE id='${id}';
 	`;
 };
 
@@ -73,7 +73,7 @@ export const findTaskSQL = id => {
 			created,
 			updated
 		FROM ${TABLE_NAME}
-		WHERE id=${id};
+		WHERE id='${id}';
 	`;
 };
 
@@ -98,14 +98,13 @@ export const updateTaskSQL = task => {
 		UPDATE ${TABLE_NAME}
 		SET 
 			name='${task.name}',
-			description='${task.description}',
-			started='${task.started}',
-			target_completion='${task.targetCompletion}',
-			actual_completion='${task.actualCompletion}',
-			in_progress='${task.inProgress}',
-			created='${task.created}',
-			updated='${task.updated}'
+			description='${task.description || ''}',
+			started='${task.started || ''}',
+			target_completion='${task.targetCompletion || ''}',
+			actual_completion='${task.actualCompletion || ''}',
+			in_progress=${task.inProgress} || 0,
+			updated='${task.updated || moment().format()}'
 		WHERE
-			id=${id};	
+			id='${id}';	
 	`;
 };

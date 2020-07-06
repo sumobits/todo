@@ -21,14 +21,14 @@ const dataSource = new TaskDataSource();
 
 const typeDefs = gql`
 	type Task {
-		id: Int
-		name: String
+		id: String!
+		name: String!
 		description: String
 		started: String
 		targetCompletion: String
 		actualCompletion: String
-		inProgress: Boolean
-		created: String
+		inProgress: Int
+		created: String!
 		updated: String
 	}
 

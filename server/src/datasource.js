@@ -14,6 +14,7 @@ import {
 	updateTaskSQL,
 	verifyTableExistsSQL,
 } from './sql';
+import Locker from './locker';
 
 const convertRowToTask = row => {
 	if (!row) {
@@ -74,6 +75,7 @@ class TaskDataSource extends DataSource {
 		}
 
 		const task = {
+			id: Locker.generateUniqueId(false),
 			name,
 			description,
 			targetCompletion,
