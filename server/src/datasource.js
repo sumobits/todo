@@ -160,7 +160,7 @@ class TaskDataSource extends DataSource {
 
 		try {
 
-			const result = await this.db.run(sql);
+			const result = await this.db.get(sql);
 			return convertRowToTask(result.rows);
 		} catch (err) {
 			this.logger.log({
@@ -185,14 +185,14 @@ class TaskDataSource extends DataSource {
 		});
 
 		try {
-			const result = await this.db.run(sql);
-			if(result.rows) {
+			const result = await this.db.all(sql);
+			if(result) {
 				this.logger.log({
 					level: 'debug',
-					message: `Found ${result.rows} task records`,
+					message: `Found ${result.length} task records`,
 				});
-
-				return map(result.rows, row => {
+				
+				return map(result, row => {
 					return convertRowToTask(row);
 				});
 			}

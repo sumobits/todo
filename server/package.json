@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "start": "gulp && node ./dist/index.js",
-    "start-debug": "gulp package-debug && node ./dist/index.js --inspect-brk",
+    "start-debug": "gulp package-debug && node ./dist/index.js --inspect",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
     "test": "mocha test",
