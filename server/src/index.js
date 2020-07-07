@@ -11,13 +11,36 @@ const {
 	gql 
 } = require('apollo-server-express');
 import dotenv from 'dotenv';
+import winston from 'winston';
 import TaskDataSource from './datasource';
 
 global.Blob = null;
 
 dotenv.config();
 
-const dataSource = new TaskDataSource();
+const loggingFormat = winston.format.printf(({ 
+	level, 
+	message,
+	timestamp,
+}) => {
+	return `${timestamp} ${level}: ${message}`;
+});
+
+const logger = winston.createLogger({
+	defaultMeta: { service: 'sumobits-todo' },
+	exitOnError: false,
+	format: winston.format.combine(
+		winston.format.timestamp(),
+		loggingFormat,
+	),
+	level: 'debug',
+	transports: [
+		new winston.transports.Console(),
+		new winston.transports.File({ filename: 'server.log' }),
+	]
+});
+
+const dataSource = new TaskDataSource(logger);
 
 const typeDefs = gql`
 	type Task {
@@ -93,11 +116,19 @@ const port = process.env.HOST_PORT || 3000;
 
 apolloServer.applyMiddleware({ app });
 
-app.listen({ port }, () => {
-	console.info(`API Endpoint listening at: http://localhost:${port}${apolloServer.graphqlPath}`);
+app.listen({ port }, async () => {
+	await dataSource.open();
+	
+	logger.log({
+		level: 'info',
+		message: `API Endpoint listening at: http://localhost:${port}${apolloServer.graphqlPath}`,
+	});
 
 	process.on('SIGINT', () => {
-		console.warn('Caught interrupt signal');
+		logger.log({
+			level: 'warn',
+			message: 'Caught interrupt signal',
+		});
 		dataSource.close();
 		process.exit();
 	});

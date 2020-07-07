@@ -1,7 +1,7 @@
 /**
  * @format
  */
-import sqlite3 from 'sqlite3';
+import sqlite from 'sqlite-async';
 import { DataSource } from 'apollo-datasource';
 import moment from 'moment';
 import map from 'lodash/map';
@@ -33,36 +33,50 @@ const convertRowToTask = row => {
 };
 
 class TaskDataSource extends DataSource {
-	constructor () {
+	constructor (logger) {
 		super();
-		console.info('Attempting to open database');
+		this.logger = logger;
+		this.db = undefined;
+	}
 
-		this.db = new sqlite3.Database(':memory:', (err, obj) => {
-			if (err) {
-				console.error(`Failed to open database: ${err}`);
-				throw err;
-			}
+	open = async () => {
+		this.logger.log({
+			level: 'debug',
+			message: 'Attempting to open database',
+		});
 
-			console.info('Successfully opened database.');
-			this.db.exec(createTaskTableSQL(), err => {
-				if (err) {
-					console.error(`Failed to create task table: ${err.message}`);
-				}
+		try {
+			this.db = await sqlite.open('./sumobits.todo.db',
+				(sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE));
+			await this.db.run(createTaskTableSQL());
+			await this.db.run(verifyTableExistsSQL());
+		} catch(err) {
+			this.logger.log({
+				level: 'error',
+				message: `Failed to open database: ${err}`,
 			});
-			this.db.exec(verifyTableExistsSQL(), err => {
-				if (err) {
-					console.error(`Failed to verify task table: ${err.message}`);
-				}
-			});
+			throw err;
+		}
+
+		this.logger.log({
+			level: 'info',
+			message: 'Successfully opened database.',
 		});
 	}
 
-	close = () => {
+	close = async () => {
 		if (!this.db) {
 			return;
 		}
 
-		this.db.close( err => console.error(`Error closing database: ${err}`) );
+		try {
+			await this.db.close();
+		} catch(err) {
+			this.logger.log({
+				level: 'error',
+				message: `Error closing database: ${err}`,
+			});
+		}
 	}
 
 	createTask = async (name, description, targetCompletion) => {
@@ -84,11 +98,24 @@ class TaskDataSource extends DataSource {
 			updated: null,
 		};
 
+		const sql = createTaskSQL(task);
+
+		this.logger.log({
+			level: 'debug',
+			message: `Creating table as ${sql}`
+		});
+
 		try {
-			await this.db.exec(createTaskSQL(task));
+			await this.db.run(sql);
 			return task;
 		} catch (err) {
-			return console.error(`Error creating task: ${err.message}`);		}
+			this.logger.log({
+				level: 'error',
+				message: `Error creating task: ${err.message}`,
+			});
+
+			throw err;
+		}
 	}
 
 	deleteTask = async id => {
@@ -102,11 +129,19 @@ class TaskDataSource extends DataSource {
 
 		const sql = deleteTaskSQL(id);
 
+		this.logger.log({
+			level: 'debug',
+			message: `Deleting task as ${sql}`
+		});
+
 		try {
-			await this.db.exec(sql);
+			await this.db.run(sql);
 			return true;
 		} catch (err) {
-			console.error(`Error deleting task [${id}]: ${err.message}`);
+			this.logger.log({
+				level: 'error',
+				message: `Error deleting task [${id}]: ${err.message}`
+			});
 			return false;
 		}
 	}
@@ -118,11 +153,22 @@ class TaskDataSource extends DataSource {
 
 		const sql = findTaskSQL(id);
 
+		this.logger.log({
+			level: 'debug',
+			message: `Searching for task as: ${sql}`
+		});
+
 		try {
-			const result = await this.db.query(sql);
+
+			const result = await this.db.run(sql);
 			return convertRowToTask(result.rows);
 		} catch (err) {
-			return console.error(`Error finding task[${id}]: ${err.message}`);
+			this.logger.log({
+				level: 'error',
+				message: `Error finding task[${id}]: ${err.message}`,
+			});
+
+			return err;
 		}
 	}
 
@@ -133,16 +179,29 @@ class TaskDataSource extends DataSource {
 
 		const sql = findTasksSQL();
 
+		this.logger.log({
+			level: 'debug',
+			message: `Retrieving all tasks ${sql}`,
+		});
+
 		try {
-			const result = await this.db.exec(sql);
+			const result = await this.db.run(sql);
 			if(result.rows) {
-				console.log(`found ${result.rows} task records`);
+				this.logger.log({
+					level: 'debug',
+					message: `Found ${result.rows} task records`,
+				});
+
 				return map(result.rows, row => {
 					return convertRowToTask(row);
 				});
 			}
 		} catch (err) {
-			return console.error(`Error finding tasks: ${err.message}`);
+			this.logger.log({
+				level: 'error',
+				message: `Error finding tasks: ${err.message}`,
+			});
+			return err;
 		}
 	}
 
@@ -159,11 +218,20 @@ class TaskDataSource extends DataSource {
 
 		const sql = updateTaskSQL(task);
 
+		this.logger.log({
+			level: 'debug',
+			message: `Updating task as ${sql}`,
+		});
+		
 		try {
-			const row = await this.db.exec(sql);
+			const row = await this.db.run(sql);
 			return convertRowToTask(row);
 		} catch (err) {
-			return console.error(`Error updating task [${task.id}]: ${err.message}`);
+			this.logger.log({
+				level: 'error',
+				message: `Error updating task [${task.id}]: ${err.message}`,
+			});
+			return err;
 		}
 	}
 }
