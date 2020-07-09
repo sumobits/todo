@@ -63,7 +63,7 @@ const MainContainer = () => {
 		onCompleted: data => {
 			setError(undefined);
 			setLoading(false);
-			setTasks(data.finaAllTasks);
+			setTasks(data.findAllTasks);
 		},
 		onError: e => {
 			setError(e);

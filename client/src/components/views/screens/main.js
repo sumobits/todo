@@ -1,13 +1,14 @@
 /**
  * @format
  */
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	Alert,
 	Dimensions,
 	FlatList,
 	StyleSheet,
 	Text,
+	TouchableNativeFeedback,
 	TouchableOpacity,
 	View,
 } from 'react-native';
@@ -27,26 +28,46 @@ const MainScreen = props => {
 		error,
 		loading,
 		navigation,
+		onDelete,
 		tasks
 	} = props;
+	const [ showDelete, setShowDelete ] = useState(false);
 	const onCreateTask = () => {
 		navigation.navigate('task', { task: {}, editing: true });
 	};
 	const renderTask = props => {
 		const { item } = props;
-
 		const onPress = () => {
 			navigation.navigate('task', { task: item, editing: false });
 		};
+		const onLongPress = () => {
+			setShowDelete(true);
+		};
+		const promptDelete = () => {
+			return (
+				Alert.alert('Decide', 'Are you sure?',
+					[
+						{ text: 'Cancel', onPress: () => { } },
+						{ text: 'OK', onPress: () => { onDelete(item.id) } },
+					]
+				)
+			);
+		}
 
 		return (
 			<View style={styles.lineItemContainer}>
-				<TouchableWithoutFeedback onPress={onPress}>
+				{
+					showDelete &&
+						<TouchableOpacity onPress={promptDelete} style={styles.deleteButtonContainer}>
+							<Icon color={Colors.red} name='delete-forever-outline' size={18} />
+						</TouchableOpacity>
+				}
+				<TouchableNativeFeedback onLongPress={onLongPress} onPress={onPress}>
 					<View style={styles.lineItem}>
 						<Text>{item.name}</Text>
 						<Text>{item.description}</Text>
 					</View>
-				</TouchableWithoutFeedback>
+				</TouchableNativeFeedback>
 			</View>
 		);
 	};
@@ -69,11 +90,11 @@ const MainScreen = props => {
 					renderItem={renderTask}
 					style={styles.list}
 				/>
-			</View>
-			<View>
-				<TouchableOpacity onPress={onCreateTask} style={styles.fabContainer}>
-					<Icon color={Colors.white} name='plus' size={36} />
-				</TouchableOpacity>
+				<View>
+					<TouchableOpacity onPress={onCreateTask} style={styles.fabContainer}>
+						<Icon color={Colors.white} name='plus' size={36} />
+					</TouchableOpacity>
+				</View>
 			</View>
 			{
 				error && Alert.alert(Translations['error.title'], `${error.message}`,
@@ -87,6 +108,17 @@ const styles = StyleSheet.create({
 	body: {
 		backgroundColor: Colors.white,
 		...Fonts.body,
+	},
+	deleteButtonContainer: {
+		alignItems: 'center',
+		backgroundColor: Colors.red,
+		borderRadius: 50,
+		color: Colors.secondary,
+		height: 20,
+		justifyContent: 'center',
+		width: 20,
+		flex: 2,
+		flexDirection: 'row',
 	},
 	emptyText: {
 		color: Colors.secondary,

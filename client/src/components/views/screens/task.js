@@ -37,7 +37,8 @@ const TaskScreen = props => {
 	};
 
 	const onCancel = () => {
-		navigation.navigate('main', { tasks });
+		navigation.setParams({ tasks })
+		navigation.pop();
 	};
 
 	return (
@@ -85,28 +86,28 @@ const TaskScreen = props => {
 						title={task.inProgress ? Translations['task.complete.action'] : Translations[ 'task.start.action']} 
 					/>
 				</TouchableOpacity>
+				{
+					!editing && (
+						<Fragment>
+							<TouchableOpacity onPress={onEdit} style={styles.rightFABContainer}>
+								<Icon color={Colors.white} name="pencil" size={36} style={styles.fabIcon} />
+							</TouchableOpacity>
+						</Fragment>
+					)
+				}
+				{
+					editing && (
+						<Fragment>
+							<TouchableOpacity onPress={onCancel} style={styles.leftFABContainer}>
+								<Icon color={Colors.white} name="close" size={36} style={styles.fabIcon} />
+							</TouchableOpacity>
+							<TouchableOpacity onPress={() => onSave(task)} style={styles.rightFABContainer}>
+								<Icon color={Colors.white} name="check" size={36} style={styles.fabIcon} />
+							</TouchableOpacity>
+						</Fragment>
+					)
+				}
 			</ScrollView>
-			{
-				!editing && (
-					<Fragment>
-						<TouchableOpacity onPress={onEdit} style={styles.rightFABContainer}>
-							<Icon color={Colors.white} name="pencil" size={36} style={styles.fabIcon} />
-						</TouchableOpacity>
-					</Fragment>
-				)
-			}
-			{
-				editing && (
-					<Fragment>
-						<TouchableOpacity onPress={onCancel} style={styles.leftFABContainer}>
-							<Icon color={Colors.white} name="close" size={36} style={styles.fabIcon} />
-						</TouchableOpacity>
-						<TouchableOpacity onPress={() => onSave(task)} style={styles.rightFABContainer}>
-							<Icon color={Colors.white} name="check" size={36} style={styles.fabIcon} />
-						</TouchableOpacity>
-					</Fragment>	
-				)
-			}
 			{
 				error && Alert.alert(Translations['error.title'], `${error.message}`,
 					[{ text: Translations['ok.msg'], onPress: () => { } }])
