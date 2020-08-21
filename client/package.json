@@ -1,7 +1,7 @@
 {
   "name": "ToDo",
   "version": "0.0.1",
-  "private": false,
+  "private": true,
   "license": "MIT",
   "scripts": {
     "android": "npx react-native run-android",

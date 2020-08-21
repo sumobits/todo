@@ -14,8 +14,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sumobits/todo.git"
+    "url": "https://github.com/sumobits/todo-server.git"
   },
+  "private": true,
   "author": "TJ Cook <sumobits@protonmail.com>",
   "license": "MIT",
   "dependencies": {
